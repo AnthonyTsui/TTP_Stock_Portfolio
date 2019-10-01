@@ -1,83 +1,76 @@
-const user = require('../models').user;
+const users = require('../models').users;
 
 module.exports = {
   create(req, res)
   {
-    return user
+    return users
       .create({
-        userID: req.body.userID,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        userName: req.body.userName,
-        userDescription: req.body.userDescription,
-        userEmail: req.body.userEmail,
-        userRole: req.body.userRole,
+        firstname: 'John',
+        lastname: 'Whatever',
+        email: 'Whatever',
+        password: 'Whatever',
       })
-      .then(user => res.status(201).send(user))
+      .then(users => res.status(201).send(users))
       .catch(error => res.status(400).send(error));
   },
 
   list(req,res)
   {
-    return user
-    .all()
-    .then(user=> res.status(200).send(user))
+    return users
+    .findAll()
+    .then(users=> res.status(200).send(users))
     .catch(error => res.status(400).send(error))
   },
 
   retrieve(req, res)
   {
-  return user
-    .findOne({where:{id: req.params.userID}})
-    .then(user =>
+  return users
+    .findOne({where:{email: req.params.userEmail}})
+    .then(users =>
     {
-      console.log(req.params.userID);
-      if (!user)
+      console.log(req.params.userEmail);
+      if (!users)
       {
         return res.status(404).send({message: 'user Not Found',});
       }
-      return res.status(200).send(user);
+      return res.status(200).send(users);
     })
     .catch(error => res.status(400).send(error));
   },
 
   update(req, res) {
-  return user
-    .findOne({where:{id: req.params.userID}})
-    .then(user =>
+  return users
+    .findOne({where:{id: req.params.userEmail}})
+    .then(users =>
     {
-      if (!user)
+      if (!users)
       {
         return res.status(404).send({
           message: 'user Not Found',
         });
       }
-      return user
+      return users
         .update({
-          userName: req.body.userName || user.userName,
-          firstName: req.body.firstName || user.firstName,
-          lastName: req.body.lastName || user.lastName,
-          userName: req.body.userName || user.userName,
-          userDescription: req.body.userDescription || user.userDescription,
-          userEmail: req.body.userEmail || user.userEmail,
-          userRole: req.body.userRole || user.userRole
+          firstname: req.body.firstName || users.firstname,
+          lastname: req.body.lastName || users.lastname,
+          email: req.body.userName || users.username,
         })
-        .then(() => res.status(200).send(user))  // Send back the updated todo.
+        .then(() => res.status(200).send(users))  // Send back the updated todo.
         .catch((error) => res.status(400).send(error));
     })
     .catch((error) => res.status(400).send(error));
   },
 
   destroy(req, res) {
-  return user
-    .findOne({where:{id: req.params.userID}})
-    .then(user => {
-      if (!user) {
+  return users
+    .findOne({where:{id: req.params.userEmail}})
+    .then(users => {
+      if (!users) {
         return res.status(400).send({
           message: 'user Not Found',
         });
       }
-      return user
+      return users
         .destroy()
         .then(() => res.status(204).send({message: 'user successfully deleted.'}))
         .catch(error => res.status(400).send(error));

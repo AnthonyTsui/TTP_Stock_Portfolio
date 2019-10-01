@@ -1,5 +1,7 @@
+'use strict';
+
 module.exports = (sequelize, DataTypes) => {
-  const Users = sequelize.define('Users', {
+  const users = sequelize.define('users', {
     email: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -17,5 +19,5 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
   });
-  return Users;
+  return users;
 };
