@@ -5,10 +5,10 @@ module.exports = {
   {
     return users
       .create({
-        firstname: 'John',
-        lastname: 'Whatever',
-        email: 'Whatever',
-        password: 'Whatever',
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        email: req.body.useremail,
+        password: req.body.userpassword,
       })
       .then(users => res.status(201).send(users))
       .catch(error => res.status(400).send(error));
@@ -25,10 +25,13 @@ module.exports = {
   retrieve(req, res)
   {
   return users
-    .findOne({where:{email: req.params.userEmail}})
+    .findOne({where:{email: req.body.useremail}})
     .then(users =>
     {
-      console.log(req.params.userEmail);
+      console.log("Received email is " + req.body.useremail);
+      console.log("Stored password is " + users.password);
+      console.log("Received password is " + req.body.userpassword);
+
       if (!users)
       {
         return res.status(404).send({message: 'user Not Found',});
