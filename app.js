@@ -1,9 +1,6 @@
 const express = require('express');
-
 const port = 8000
-
 const axios = require('axios');
-
 const app = express()
 
 require('./server/routes')(app);
