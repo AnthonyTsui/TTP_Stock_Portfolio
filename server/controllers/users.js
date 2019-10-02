@@ -9,6 +9,7 @@ module.exports = {
         lastname: req.body.lastname,
         email: req.body.useremail,
         password: req.body.userpassword,
+        balance: 5000.00,
       })
       .then(users => res.status(201).send(users))
       .catch(error => res.status(400).send(error));

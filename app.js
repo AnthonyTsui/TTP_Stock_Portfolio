@@ -4,6 +4,8 @@ const axios = require('axios');
 const app = express()
 const request = require('request');
 
+const alphaapi = 'LQYZUXEHKSVF5KQW';
+
 var session = require('express-session');
 
 var bodyParser = require('body-parser')
@@ -70,6 +72,8 @@ app.get('/login', function(req, res){
 
 app.post('/login', function(req, res){
 
+	//need to change email to lowercase 
+
 	let posturl = 'http://localhost:8000/api/login'
 
 	let password = req.body.userpassword;
@@ -121,6 +125,9 @@ app.get('/register', function(req, res){
 })
 
 app.post('/register', function(req, res){
+
+	//need to change email to lowercase 
+
 	let posturl = 'http://localhost:8000/api/register'
 	let checkurl = 'http://localhost:8000/api/login'
 
@@ -160,6 +167,80 @@ app.get('/dashboard', auth, function (req, res) {
     	login:req.session.admin,
     });
 });
+
+
+
+app.post('/buystocks',  function(req, res){
+
+	//need to change email to lowercase 
+
+	let checkurl = 'http://localhost:8000/api/checkstocks'
+	let createurl = 'http://localhost:8000/api/userstocks'
+	let updateurl = 'http://localhost:8000/api/updatestocks'
+
+	request.post(checkurl, {
+		form:{
+			useremail: req.session.user,
+			stocksymbol: req.body.stocksymbol,}},
+		 function(err, response,body){
+		 	if(body === undefined || body.length <= 2){
+
+		 		request.post(createurl,{
+		 			form:{
+		 				useremail: req.session.user,
+		 				stocksymbol: req.body.stocksymbol,
+		 				stockamount: req.body.stockamount,
+		 			}},
+		 			function(err, response, body){
+		 				console.log("Success on creating");
+		 				res.render('pages/dashboard',{
+		 					login:req.session.admin,
+		 				});
+		 			}
+		 		)
+		 	}
+		 	else
+		 	{
+		 		request.post(updateurl,{
+		 			form:{
+		 				useremail: req.session.user,
+		 				stocksymbol: req.body.stocksymbol,
+		 				stockamount: req.body.stockamount,
+		 			}},
+		 			function(err, response, body){
+		 				console.log("Success on updating");
+		 				res.render('pages/dashboard',{
+		 					login:req.session.admin,
+		 				});
+		 			}
+		 		)
+		 		
+		 	}
+
+	})
+});
+
+app.get('/test', function(req, res){
+	var test = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=MSFT&datatype=json&apikey=LQYZUXEHKSVF5KQW'
+	request(test, function(error,response,body){
+			//console.log('error :', error);
+			//console.log('response:', response.statusCode);
+			console.log(body);
+			let parsed = JSON.parse(body);
+			console.log(parsed["Global Quote"]["02. open"]);
+			if (body.length <= 155){
+				res.status(200).send({
+  				message: "Error",})
+			}
+			else {
+				res.status(200).send({
+			  				message: "Uh oh you shouldn't be here.",})
+			}
+		})
+
+});
+
+
 
 app.get('/logout', function (req, res) {
   req.session.destroy();
