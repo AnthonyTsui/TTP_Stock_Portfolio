@@ -4,6 +4,8 @@ const axios = require('axios');
 const app = express()
 const request = require('request');
 
+var session = require('express-session');
+
 var bodyParser = require('body-parser')
 
 
@@ -13,13 +15,49 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(express.static("public"));
 
+app.use(session({
+	key: 'user_sid',
+    secret: '2C44-4D44-WppQ38S',
+    resave: true,
+    saveUninitialized: true,
+    cookie: {
+        expires: 60000
+    }
+}));
+
+/*
+app.use((req, res, next) => {
+    if (req.cookies.user_sid && !req.session.user) {
+        res.clearCookie('user_sid');        
+    }
+    next();
+});
+*/
+
+//Authentication function for sessions
+
+var auth = function(req, res, next) {
+  //if (req.session && req.session.user === "amy" && req.session.admin)
+  if (req.session && req.session.admin)
+    return next();
+  else
+    return res.sendStatus(401);
+	// need to change to redirect
+};
 
 require('./server/routes')(app);
 
 app.set('view engine', 'ejs');
 
 
+
+
 app.get('/', function(req, res){
+	//res.json({Message: 'beginning of api'});
+	res.render('pages/home');
+});
+
+app.get('/login', function(req, res){
 	//res.json({Message: 'beginning of api'});
 	res.render('pages/home');
 });
@@ -47,6 +85,10 @@ app.post('/login', function(req, res){
 
 			if (parsed.password != null && parsed.password == password){
 				//console.log("Not null!")
+				req.session.user = parsed.email;
+				req.session.admin = true;
+				console.log(req.session.user);
+				console.log('Verified login');
 				res.render('pages/index');
 			}
 			else{
@@ -82,7 +124,7 @@ app.post('/register', function(req, res){
 		 	if(parsed.errors != null){
 		 		console.log("error on request " + err)
 		 		console.log("Duplicate email detected")
-		 		res.render('pages/register');
+		 		res.render('pages/home');
 		 	}
 		 	else
 		 	{
@@ -90,12 +132,22 @@ app.post('/register', function(req, res){
 		 		//console.log("success!")
 		 		//console.log(response)
 		 		//console.log(response);
-		 		res.render('pages/index');
+		 		res.render('pages/home');
 		 	}
 
 	})
 });
 
+
+app.get('/dashboard', auth, function (req, res) {
+    //res.send("You can only see this after you've logged in.");
+    res.render('pages/dashboard');
+});
+
+app.get('/logout', function (req, res) {
+  req.session.destroy();
+  res.send("logout success!");
+});
 
 app.get('*', (req, res) => res.status(200).send({
   message: "Uh oh you shouldn't be here.",
