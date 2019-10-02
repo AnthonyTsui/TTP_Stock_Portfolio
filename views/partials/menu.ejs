@@ -9,11 +9,21 @@
       <a class="navbar-brand" href="#">LOGO</a>
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
-      <ul class="nav navbar-nav navbar-right">
-        <li id="home"><a href="/">HOME</a></li>
-        <li id="about"><a href="/about">ABOUT US</a></li>
-        <li id="contact"><a href="/contact">CONTACT US</a></li>
+
+      <% if (login) { %>
+        <ul class="nav navbar-nav navbar-right">
+          <li id="home"><a href="/logout">Logout</a></li>
+          <li id="about"><a href="/dashboard">Portfolio</a></li>
+          <li id="contact"><a href="/dashboard">Transactions</a></li>
       </ul>
+      <% } else{ %>
+        <ul class="nav navbar-nav navbar-right">
+          <li id="home"><a href="/">About</a></li>
+          <li id="about"><a href="/login">Login</a></li>
+          <li id="contact"><a href="/register">Register</a></li>
+      </ul>
+      <% } %>
+
     </div>
   </div>
 </nav>

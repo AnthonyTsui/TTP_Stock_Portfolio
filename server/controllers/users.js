@@ -18,7 +18,11 @@ module.exports = {
   {
     return users
     .findAll()
-    .then(users=> res.status(200).send(users))
+    .then(users=>{
+      //let data = ['test','bigtest']
+      //res.status(200).send(data)
+      res.status(200).send(users)
+    })
     .catch(error => res.status(400).send(error))
   },
 

@@ -54,12 +54,16 @@ app.set('view engine', 'ejs');
 
 app.get('/', function(req, res){
 	//res.json({Message: 'beginning of api'});
-	res.render('pages/home');
+	res.render('pages/home',{
+		login:req.session.admin,
+	});
 });
 
 app.get('/login', function(req, res){
 	//res.json({Message: 'beginning of api'});
-	res.render('pages/home');
+	res.render('pages/home',{
+		login:req.session.admin,
+	});
 });
 
 //Login and awful authentication below
@@ -87,15 +91,20 @@ app.post('/login', function(req, res){
 				//console.log("Not null!")
 				req.session.user = parsed.email;
 				req.session.admin = true;
+				//console.log("Parsed is: " + parsed);
+				console.log("Response: " + response.content)
+
 				console.log(req.session.user);
 				console.log('Verified login');
-				res.render('pages/index');
+				res.redirect('/dashboard');
 			}
 			else{
 				//console.log("null!")
 				//console.log("body is " + parsed.password);
 				
-				res.render('pages/home');
+				res.render('pages/home',{
+					login:req.session.admin,
+				});
 				
 			}
 			
@@ -106,7 +115,9 @@ app.post('/login', function(req, res){
 //Registration logic below 
 
 app.get('/register', function(req, res){
-	res.render('pages/register');
+	res.render('pages/register',{
+		login:req.session.admin,
+	});
 })
 
 app.post('/register', function(req, res){
@@ -124,7 +135,9 @@ app.post('/register', function(req, res){
 		 	if(parsed.errors != null){
 		 		console.log("error on request " + err)
 		 		console.log("Duplicate email detected")
-		 		res.render('pages/home');
+		 		res.render('pages/home',{
+		 			login:req.session.admin,
+		 		});
 		 	}
 		 	else
 		 	{
@@ -132,7 +145,9 @@ app.post('/register', function(req, res){
 		 		//console.log("success!")
 		 		//console.log(response)
 		 		//console.log(response);
-		 		res.render('pages/home');
+		 		res.render('pages/home',{
+		 			login:req.session.admin,
+		 		});
 		 	}
 
 	})
@@ -141,12 +156,15 @@ app.post('/register', function(req, res){
 
 app.get('/dashboard', auth, function (req, res) {
     //res.send("You can only see this after you've logged in.");
-    res.render('pages/dashboard');
+    res.render('pages/dashboard',{
+    	login:req.session.admin,
+    });
 });
 
 app.get('/logout', function (req, res) {
   req.session.destroy();
-  res.send("logout success!");
+  //res.send("logout success!");
+  res.redirect('/login');
 });
 
 app.get('*', (req, res) => res.status(200).send({
