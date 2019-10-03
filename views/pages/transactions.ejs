@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <% include ../partials/head %> 
+</head>
+<body>
+<% include  ../partials/menu %>
+<div class="container-fluid bg-3 text-center">    
+  <h1>Transactions</h1><br>
+  <div class="row">
+    <div class="col-sm-6">
+
+
+      <div class="row" style="margin-bottom: :20px; height: 70px; border-bottom: solid black 2px;">
+      <h2>Your Transactions </h2>
+      </div>
+
+      <% if (alltransactions != null) { %> 
+      <% for (var i = 0 ; i < alltransactions.length; i++) { %>
+            <div class="row" style="height: 50px; margin:20px; border: solid black 2px; font-size:20px; text-align:center; padding-top: 10px ">
+              Stocks Symbol is:  <%= alltransactions[i][1] %> 
+            -- Stocks Amount is: <%= alltransactions[i][2] %> 
+            -- Stocks Price is: <%= alltransactions[i][3] %>
+            </div>
+      <% } %>
+      <% } %>
+    </div>
+    <div class="col-sm-6"> 
+      
+
+      
+    </div>
+  </div>
+</div>
+</body>
+<% include ../partials/script %>
+</html>

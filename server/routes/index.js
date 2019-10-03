@@ -1,5 +1,6 @@
 const usersController = require('../controllers').users;
 const userstocksController = require('../controllers').userstocks;
+const transactionsController = require('../controllers').usertransactions;
 
 module.exports = (app) => {
 	app.get('/api', (req, res) => res.status(200).send({
@@ -29,5 +30,12 @@ module.exports = (app) => {
 	app.post('/api/checkstocks', userstocksController.retrieveSpecific);
 
 	app.post('/api/updatestocks', userstocksController.update);
+
+	//Usertransactions Logic
+	app.get('/api/alltransactions', transactionsController.list);
+
+	app.post('/api/usertransactions', transactionsController.retrieve);
+
+	app.post('/api/newtransactions', transactionsController.create);
 
 };

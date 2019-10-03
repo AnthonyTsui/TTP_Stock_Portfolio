@@ -23,7 +23,7 @@ app.use(session({
     resave: true,
     saveUninitialized: true,
     cookie: {
-        expires: 60000
+        expires: 600000
     }
 }));
 
@@ -43,7 +43,8 @@ var auth = function(req, res, next) {
   if (req.session && req.session.admin)
     return next();
   else
-    return res.sendStatus(401);
+  	return res.redirect('/login');
+    //return res.sendStatus(401);
 	// need to change to redirect
 };
 
@@ -164,15 +165,55 @@ app.post('/register', function(req, res){
 
 app.get('/dashboard', auth, function (req, res) {
     //res.send("You can only see this after you've logged in.");
-    res.render('pages/dashboard',{
-    	login:req.session.admin,
-    	currbalance: req.session.balance,
-    });
+    let findstocks = 'http://localhost:8000/api/findstocks'
+   
+    const alphaurl1 = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol='
+	const alphaurl2 = '&datatype=json&apikey=LQYZUXEHKSVF5KQW' 
+
+    request.post(findstocks, {
+    	form:{
+    		useremail: req.session.user,
+    	}},
+    	function(error, response,body){
+
+    		var allstocks = JSON.parse(body)
+
+    		var promises = []
+
+    		for(i = 0; i < allstocks.length; i++){
+    			promises.push(new Promise(function(resolve, reject)
+    			{
+    				request(alphaurl1+allstocks[i][1]+alphaurl2, function(error, response, body){
+    				var parsed = JSON.parse(body);
+    				console.log("Body is : " + body)
+    				//console.log("Parsed is : " + parsed)
+    				//console.log(parsed["Global Quote"]["09. change"]);
+					//var stockopen = parseFloat(parsed["Global Quote"]["09. change"]);
+
+					resolve([parsed["Global Quote"]["09. change"] ,parseFloat(parsed["Global Quote"]["08. previous close"])]);
+    				})
+    			}))
+    		}
+
+    		Promise.all(promises).then(function(resolvedResults){
+    			console.log(resolvedResults);
+    			res.render('pages/dashboard',{
+		    	login:req.session.admin,
+		    	currbalance: req.session.balance,
+		    	allstocks: allstocks,
+		    	stockchange: resolvedResults,
+	    		});
+    		})
+    		
+    		
+    })
+
+
 });
 
 
 
-app.post('/buystocks',  function(req, res){
+app.post('/buystocks', auth, function(req, res){
 
 	//need to change email to lowercase 
 
@@ -183,12 +224,16 @@ app.post('/buystocks',  function(req, res){
 	const alphaurl1 = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol='
 	const alphaurl2 = '&datatype=json&apikey=LQYZUXEHKSVF5KQW'
 
+	var transactionsymbol = req.body.stocksymbol
+
 	request(alphaurl1 + req.body.stocksymbol + alphaurl2, function(error,response,body){
 			//console.log('error :', error);
 			//console.log('response:', response.statusCode);
 			console.log(body);
 			var parsed = JSON.parse(body);
 			
+
+
 			if (body.length <= 155){
 				res.status(200).send({
   				message: "Error no such stock",})
@@ -224,6 +269,17 @@ app.post('/buystocks',  function(req, res){
 					}
 
 					else {
+						let createrecord = 'http://localhost:8000/api/newtransactions';
+						request.post(createrecord, {
+							form:{
+								useremail: req.session.user,
+								stocksymbol: transactionsymbol,
+								stockamount: parseInt(req.body.stockamount,10),
+								stockprice: stockprice,
+							}},
+							function(error, response,body){
+								console.log("Transactions body is : " + body)
+							})
 						let updatebalance = 'http://localhost:8000/api/userupdate';
 						request.post(updatebalance,{
 							form:{
@@ -239,8 +295,8 @@ app.post('/buystocks',  function(req, res){
 										useremail: req.session.user,
 										stocksymbol: req.body.stocksymbol,}},
 									 function(err, response,body){
-									 	if(body === undefined || body.length <= 2){
 
+									 	if(body === undefined || body.length <= 2){
 									 		request.post(createurl,{
 									 			form:{
 									 				useremail: req.session.user,
@@ -249,7 +305,7 @@ app.post('/buystocks',  function(req, res){
 									 			}},
 									 			function(err, response, body){
 									 				console.log("Success on creating");
-									 				res.direct('/dashboard');
+									 				res.redirect('/dashboard');
 									 			}
 									 		)
 									 	}
@@ -287,6 +343,26 @@ app.post('/buystocks',  function(req, res){
 
 	
 });
+
+app.get('/transactions', auth, function (req, res) {
+    //res.send("You can only see this after you've logged in.");
+    let findstocks = 'http://localhost:8000/api/usertransactions'
+    request.post(findstocks, {
+    	form:{
+    		useremail: req.session.user,
+    	}},
+    	function(error, response,body){
+    		var alltransactions = JSON.parse(body)
+    		res.render('pages/transactions',{
+	    	login:req.session.admin,
+	    	alltransactions: alltransactions,
+	    });
+    })
+
+
+});
+
+
 
 app.get('/test', function(req, res){
 	var test = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=MSFT&datatype=json&apikey=LQYZUXEHKSVF5KQW'

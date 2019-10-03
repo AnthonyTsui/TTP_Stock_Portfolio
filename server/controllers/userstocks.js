@@ -23,6 +23,7 @@ module.exports = {
     .then(userstocks=>{
       //let data = ['test','bigtest']
       //res.status(200).send(data)
+      //var rawuserstocks = userstocks.get({plain: true});
       res.status(200).send(userstocks)
     })
     .catch(error => res.status(400).send(error))

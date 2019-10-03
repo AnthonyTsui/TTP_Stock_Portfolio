@@ -6,34 +6,66 @@
 <body>
 <% include  ../partials/menu %>
 <div class="container-fluid bg-3 text-center">    
-  <h3>TTP Dashboard</h3><br>
+  <h1>Portfolio</h1><br>
   <div class="row">
-    <div class="col-sm-4">
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-      
+
+    <div class="col-sm-6" style= "border-right: solid black 4px; height:100vh">
+      <div class="row" style="margin-bottom: :20px; height: 100px">
+        <% var total = 0; %>
+        <% if (allstocks != null) { %>
+        <% for (var i = 0; i < allstocks.length; i++){ %>
+              <% total += allstocks[i][2] * stockchange[i][1]; %>
+        <% } %>
+        <% } %>
+
+
+
+
+      <h2>Your Portfolio ( $<%= total %> ) </h2>
     </div>
-    <div class="col-sm-4"> 
-      <h1> Buy Stocks <h1>
-      	<form action ="/buystocks" method="post">
-			Stock Symbol
-			<br>
-			<input type="text" placeholder="SYMBOL" name="stocksymbol">
-			<br>
-			Amount
-			<br>
-			<input type="text" name="stockamount">
-			<br>
-			<input type="submit" value="Buy">
-		</form>
-    </div>
-    <div class="col-sm-4"> 
-    	<% if (login) { %>
-        <p>Current Balance : <%= currbalance %> </p>
-      <% } else{ %>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+      <% if (allstocks != null) { %> 
+      <% for (var i = 0 ; i < allstocks.length; i++) { %>
+     
+          <div class="row" style="  ">
+            <div class="col-sm-5" style="height: 50px; background-color:<%- stockchange[i][0] >= 0 ? '#ccffdd' : '#ffcccc'%>; border-bottom: solid black 2px; font-size:20px; text-align:center; padding: 10px; margin-bottom:15px; margin-top:15px;  ">
+              <%= allstocks[i][1] %> - <%= allstocks[i][2] %> Shares 
+            </div>
+            <div class="col-sm-5" style="height: 50px; background-color:<%- stockchange[i][0] >= 0 ? '#ccffdd' : '#ffcccc'%>; border-bottom:solid black 2px; font-size:20px; text-align:center; padding: 10px; margin-bottom: 15px; margin-top:15px; ">
+               Total: <%=stockchange[i][1] * allstocks[i][2] %> &nbsp;&nbsp;&nbsp; Change: <%= stockchange[i][0] %>
+          </div>
+        </div>
+      <% } %>
       <% } %>
       
+      
+
+
+
     </div>
+    <div class="col-sm-6"> 
+      <div class="row" style="margin-bottom: :20px; height: 100px">
+      <h2>Buy Stocks </h2>
+      </div>
+      <% if (login) { %>
+      <h3>Current Balance: $<%= currbalance %> </h3>
+      <% } else{ %>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+      <% } %>
+      <div class="row">
+        <form action ="/buystocks" method="post">
+    			Stock Symbol
+    			<br>
+    			<input type="text" placeholder="SYMBOL" name="stocksymbol">
+    			<br>
+    			Amount
+    			<br>
+    			<input type="text" name="stockamount">
+    			<br>
+    			<input type="submit" value="Buy">
+  		  </form>
+      </div>
+    </div>
+
   </div>
 </div>
 </body>
