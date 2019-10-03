@@ -3,7 +3,7 @@
 <head>
  <% include ../partials/head %> 
 </head>
-<body>
+<body style="background-color:#f2f2f2 ">
 <% include  ../partials/menu %>
 <div class="container-fluid bg-3 text-center">    
   <h1>Portfolio</h1><br>
@@ -56,19 +56,23 @@
         <p> <%=errormessage %> </p>
       <% } %>
       </div>
-      <div class="row">
-        <form action ="/buystocks" method="post">
-    			Stock Symbol
-    			<br>
-    			<input type="text" placeholder="SYMBOL" name="stocksymbol">
-    			<br>
-    			Amount
-    			<br>
-    			<input type="text" name="stockamount">
-    			<br>
-    			<input type="submit" value="Buy">
-  		  </form>
+
+      <div class="container" style="border-color:black; border-style: solid; width: 20vw; padding-bottom:20px ;padding-top:20px; " >
+    <div class="row">
+        <div class="col-md-12">
+          <form action ="/buystocks" method="post">
+          <br>
+          <input type="text" placeholder="SYMBOL" name="stocksymbol" style="width:80%; padding:12px 20px; margin: 8px 0; display: inline-block; border:1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+          <br>
+          <br>
+          <input type="text" name="stockamount" placeholder="AMOUNT" style="width:80%; padding:12px 20px; margin: 8px 0; display: inline-block; border:1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+          <br>
+          <input type="submit" value="Buy" style=" color:white; background:black; border:thin; height: 50px; width: 200px; border-radius:5px; font-size: 20px; margin-top: 30px">
+        </form>
+        </div>
       </div>
+    </div>
+
     </div>
 
   </div>

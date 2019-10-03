@@ -163,6 +163,7 @@ app.post('/register', function(req, res){
 		 		//console.log("success!")
 		 		//console.log(response)
 		 		//console.log(response);
+		 		req.session.error =""
 		 		res.redirect('/login')
 		 	}
 
@@ -260,7 +261,7 @@ app.post('/buystocks', auth, function(req, res){
 				req.session.error = "No such Stock, please try again"
 				res.redirect('/dashboard');
 			}
-			else if(parsed["Global Quote"] === undefined || typeof parsed["Gloal Quote"] === "undefined" ) {
+			else if(parsed["Global Quote"] === undefined) {
 				req.session.error = "Too many API calls, please wait before trying again"
 				res.redirect('/transactions');
 
@@ -270,7 +271,7 @@ app.post('/buystocks', auth, function(req, res){
 				//console.log(parsed["Global Quote"]["02. open"]);
 
 				var stockopen = parseFloat(parsed["Global Quote"]["02. open"]);
-				var stockprice = parseFloat(parsed["Global Quote"]["08. previous close"], 10);
+				var stockprice = parseFloat(parsed["Global Quote"]["08. previous close"]);
 
 
 				//console.log("logged open is " + stockprice)
