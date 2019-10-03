@@ -19,6 +19,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    balance: {
+      type: DataTypes.DOUBLE,
+      allowNull: false,
+    },
   });
   return users;
 };

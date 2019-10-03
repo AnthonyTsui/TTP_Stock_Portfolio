@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+	<% include ../partials/head %>
 	 <meta charset="utf-8">
 	<title>TTP Stage 2 Stock Portfolio Splash Page </title>
 
@@ -12,31 +13,37 @@
   	</style>
 </head>
 
-<body>
+<body style="background-color:#f2f2f2 ">
+	<% include  ../partials/menu %>
 	<main>
-		<h1>Register Below </h1>
-
-		<form action ="/register" method="post">
-			First name
-			<br>
-			<input type="text" placeholder="" name="firstname">
-			<br>
-			Last Name
-			<br>
-			<input type="text" placeholder="" name="lastname">
-			<br>
-			Email
-			<br>
-			<input type="text" placeholder="Email" name="useremail">
-			<br>
-			Password
-			<br>
-			<input type="password" name="userpassword">
-			<br>
-
-			<input type="submit" value="Login">
-		</form>
-
+		<div style="text-align:center; margin-top:20vh; padding-bottom:20px;">
+		<div class="container" style="border-color:#66a3ff; background:#99c2ff; border-style: solid; width: 20vw; padding-bottom:20px; border-radius:10px;" >
+		<h1 style="color:white;">Register Below </h1>
+			<div class="row">
+				<div class="col-md-12">
+				<form action ="/register" method="post" >
+				
+					<br>
+					<input type="text" placeholder="First Name" name="firstname" style="width:80%; padding:12px 20px; margin: 8px 0; display: inline-block; border:1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+					<br>
+			
+					<br>
+					<input type="text" placeholder="Last Name" name="lastname" style="width:80%; padding:12px 20px; margin: 8px 0; display: inline-block; border:1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+					<br>
+					
+					<br>
+					<input type="text" placeholder="Email" name="useremail" style="width:80%; padding:12px 20px; margin: 8px 0; display: inline-block; border:1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+					<br>
+					<br>
+					<input type="password" placeholder="Password" name="userpassword" style="width:80%; padding:12px 20px; margin: 8px 0; display: inline-block; border:1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+					<br>
+					<br>
+					<input type="submit" value="Register" style=" color:#003d99; background:#80b3ff; border:thin; height: 30px; width: 100px; border-radius:5px; font-size: 15px;">
+				</form>
+			</div>
+			</div>
+		</div>
+	</div>
 
 	</main>
 </body>

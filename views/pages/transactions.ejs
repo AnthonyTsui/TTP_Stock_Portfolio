@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <% include ../partials/head %> 
+</head>
+<body style="background-color:#f2f2f2">
+<% include  ../partials/menu %>
+<div class="container-fluid bg-3 text-center">    
+  <h1>Transactions</h1><br>
+  <div class="row">
+    <div class="col-sm-6">
+
+
+      <div class="row" style="margin-bottom: :20px; height: 70px; border-bottom: solid black 2px;">
+      <h2>Your Transactions </h2>
+      </div>
+
+      <div style="color:red;">
+      <% if (errormessage != null){ %>
+        <h3> <%=errormessage %> </h3>
+      <% } %>
+      </div>
+
+      <% if (alltransactions != null) { %> 
+      <% for (var i = 0 ; i < alltransactions.length; i++) { %>
+            <div class="row" style="height: 50px; margin:20px; border: solid black 2px; font-size:20px; text-align:center; padding-top: 10px ">
+              Stock:  <%= alltransactions[i][1] %> 
+           &nbsp;&nbsp;  <%= alltransactions[i][2] %> Shares 
+            &nbsp;@&nbsp; Stocks Price is: $<%= alltransactions[i][3] %>
+            </div>
+      <% } %>
+      <% } %>
+    </div>
+    <div class="col-sm-6"> 
+      
+
+      
+    </div>
+  </div>
+</div>
+</body>
+<% include ../partials/script %>
+</html>

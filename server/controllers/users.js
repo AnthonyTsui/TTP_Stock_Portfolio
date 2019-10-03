@@ -9,6 +9,7 @@ module.exports = {
         lastname: req.body.lastname,
         email: req.body.useremail,
         password: req.body.userpassword,
+        balance: 5000.00,
       })
       .then(users => res.status(201).send(users))
       .catch(error => res.status(400).send(error));
@@ -47,9 +48,13 @@ module.exports = {
 
   update(req, res) {
   return users
-    .findOne({where:{id: req.params.userEmail}})
+    .findOne({where:{email: req.body.useremail}})
     .then(users =>
     {
+      console.log("Received email is " + req.body.useremail);
+      console.log("Stored email is " + users.email);
+      console.log("Balance is " + users.balance);
+
       if (!users)
       {
         return res.status(404).send({
@@ -58,9 +63,9 @@ module.exports = {
       }
       return users
         .update({
-          firstname: req.body.firstName || users.firstname,
-          lastname: req.body.lastName || users.lastname,
-          email: req.body.userName || users.username,
+          balance: parseFloat(users.balance) - parseFloat(req.body.totalprice)
+          //balance: 1000.00
+          
         })
         .then(() => res.status(200).send(users))  // Send back the updated todo.
         .catch((error) => res.status(400).send(error));
