@@ -1,15 +1,15 @@
+
+require('dotenv').config()
+console.log(process.env.API_KEY)
+
 const express = require('express');
 const port = 8000
 const axios = require('axios');
 const app = express()
 const request = require('request');
-
 const bcrypt = require('bcrypt');
 
-const alphaapi = 'LQYZUXEHKSVF5KQW';
-
 var session = require('express-session');
-
 var bodyParser = require('body-parser')
 
 
@@ -29,25 +29,13 @@ app.use(session({
     }
 }));
 
-/*
-app.use((req, res, next) => {
-    if (req.cookies.user_sid && !req.session.user) {
-        res.clearCookie('user_sid');        
-    }
-    next();
-});
-*/
-
 //Authentication function for sessions
 
 var auth = function(req, res, next) {
-  //if (req.session && req.session.user === "amy" && req.session.admin)
   if (req.session && req.session.admin)
     return next();
   else
   	return res.redirect('/login');
-    //return res.sendStatus(401);
-	// need to change to redirect
 };
 
 require('./server/routes')(app);
@@ -74,11 +62,10 @@ app.get('/login', function(req, res){
 	
 });
 
-//Login and awful authentication below
+//Login 
 
 app.post('/login', function(req, res){
 
-	//need to change email to lowercase 
 
 	let posturl = 'http://localhost:8000/api/login'
 
@@ -86,27 +73,21 @@ app.post('/login', function(req, res){
 	let email = req.body.useremail.toLowerCase();
 
 	request.post(posturl, {form:{useremail:email}}, function(err, response, body){
-		//console.log("We are posting to " + posturl + "Using the credentials: " + password + " " + email );
 		if(err)
 		{
-			//console.log("error on request " + posturl)
+
 			res.render('pages/home');
 		}
 		else
 		{
-			//console.log("success on request " + posturl)
 			let parsed = JSON.parse(body);
 
 			if (parsed.password != null && (bcrypt.compareSync(req.body.userpassword, parsed.password))){
-				//console.log("Not null!")
+
 				req.session.user = parsed.email;
 				req.session.admin = true;
 				req.session.balance = parsed.balance;
-				//console.log("Parsed is: " + parsed);
-				//console.log("Response: " + response.content)
 
-				//console.log(req.session.user);
-				//console.log('Verified login');
 				if(req.session.error){
 					delete req.session.error
 				}
@@ -114,8 +95,6 @@ app.post('/login', function(req, res){
 	
 			}
 			else{
-				//console.log("null!")
-				//console.log("body is " + parsed.password);
 				req.session.error = 'Incorrect Login'
 				res.redirect('/login');
 				
@@ -134,9 +113,6 @@ app.get('/register', function(req, res){
 })
 
 app.post('/register', function(req, res){
-
-	//need to change email to lowercase 
-
 	let posturl = 'http://localhost:8000/api/register'
 	let checkurl = 'http://localhost:8000/api/login'
 
@@ -152,17 +128,12 @@ app.post('/register', function(req, res){
 		 function(err, response,body){
 		 	let parsed = JSON.parse(body);
 		 	if(parsed.errors != null){
-		 		//console.log("error on request " + err)
-		 		//console.log("Duplicate email detected")
 		 		req.session.error = "This Email already has an account"
 		 		res.redirect('/login')
 		 	}
 		 	else
 		 	{
 		 		
-		 		//console.log("success!")
-		 		//console.log(response)
-		 		//console.log(response);
 		 		req.session.error =""
 		 		res.redirect('/login')
 		 	}
@@ -170,13 +141,13 @@ app.post('/register', function(req, res){
 	})
 });
 
+//Portfolio and transaction logic
 
 app.get('/dashboard', auth, function (req, res) {
-    //res.send("You can only see this after you've logged in.");
     let findstocks = 'http://localhost:8000/api/findstocks'
    
     const alphaurl1 = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol='
-	const alphaurl2 = '&datatype=json&apikey=LQYZUXEHKSVF5KQW' 
+	const alphaurl2 = '&datatype=json&apikey='+process.env.API_KEY 
 
 
     request.post(findstocks, {
@@ -194,10 +165,6 @@ app.get('/dashboard', auth, function (req, res) {
     			{
     				request(alphaurl1+allstocks[i][1]+alphaurl2, function(error, response, body){
     				var parsed = JSON.parse(body);
-    				//console.log("Body is : " + body)
-    				//console.log("Parsed is : " + parsed)
-    				//console.log(parsed["Global Quote"]["09. change"]);
-					//var stockopen = parseFloat(parsed["Global Quote"]["09. change"]);
 
 					try{
 						resolve([parsed["Global Quote"]["09. change"] ,parseFloat(parsed["Global Quote"]["08. previous close"])]);
@@ -211,7 +178,6 @@ app.get('/dashboard', auth, function (req, res) {
     		}
 
     		Promise.all(promises).then(function(resolvedResults){
-    			//console.log(resolvedResults);
     				res.render('pages/dashboard',{
 			    	login:req.session.admin,
 			    	currbalance: req.session.balance,
@@ -223,35 +189,26 @@ app.get('/dashboard', auth, function (req, res) {
 		    		if(req.session.error){
 	    				delete req.session.error;
 	    			}
-    			
-    			
-	    		
     		})
-    		
-    		
     })
-
-
 });
 
 
 
 app.post('/buystocks', auth, function(req, res){
 
-	//need to change email to lowercase 
 
 	let checkurl = 'http://localhost:8000/api/checkstocks'
 	let createurl = 'http://localhost:8000/api/userstocks'
 	let updateurl = 'http://localhost:8000/api/updatestocks'
 
 	const alphaurl1 = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol='
-	const alphaurl2 = '&datatype=json&apikey=LQYZUXEHKSVF5KQW'
+	const alphaurl2 = '&datatype=json&apikey=' + process.env.API_KEY
 
 	var transactionsymbol = req.body.stocksymbol
 
 	request(alphaurl1 + req.body.stocksymbol + alphaurl2, function(error,response,body){
-			//console.log('error :', error);
-			//console.log('response:', response.statusCode);
+			
 			console.log(body);
 			var parsed = JSON.parse(body);
 			
@@ -267,15 +224,9 @@ app.post('/buystocks', auth, function(req, res){
 
 			}
 			else {
-				//console.log("Succes on vantage api call")
-				//console.log(parsed["Global Quote"]["02. open"]);
 
 				var stockopen = parseFloat(parsed["Global Quote"]["02. open"]);
 				var stockprice = parseFloat(parsed["Global Quote"]["08. previous close"]);
-
-
-				//console.log("logged open is " + stockprice)
-				//console.log("logged price is " + stockprice)
 				
 				let checkuser = 'http://localhost:8000/api/login'
 				request.post(checkuser,{
@@ -287,9 +238,6 @@ app.post('/buystocks', auth, function(req, res){
 					var balance = parseFloat(parsed.balance);
 					var totalprice = stockprice * parseInt(req.body.stockamount,10)
 
-					//console.log("Body is: " + body)
-					//console.log("Balance is : " + parsed.balance)
-					//console.log("Totalprice is : " + totalprice)
 
 					if (totalprice > balance){
 						req.session.error = "Not enough balance to purchase"
@@ -306,7 +254,6 @@ app.post('/buystocks', auth, function(req, res){
 								stockprice: stockprice,
 							}},
 							function(error, response,body){
-								//console.log("Transactions body is : " + body)
 							})
 						let updatebalance = 'http://localhost:8000/api/userupdate';
 						request.post(updatebalance,{
@@ -348,8 +295,6 @@ app.post('/buystocks', auth, function(req, res){
 									 			function(err, response, body){
 									 				var parsed = JSON.parse(body);
 													var currbalance = parsed.balance;
-													//console.log("Balance: " + currbalance)
-									 				//console.log("Success on updating");
 									 				res.redirect('/dashboard');
 									 			}
 									 		)
@@ -373,7 +318,6 @@ app.post('/buystocks', auth, function(req, res){
 });
 
 app.get('/transactions', auth, function (req, res) {
-    //res.send("You can only see this after you've logged in.");
     let findstocks = 'http://localhost:8000/api/usertransactions'
     request.post(findstocks, {
     	form:{
@@ -396,29 +340,23 @@ app.get('/transactions', auth, function (req, res) {
 });
 
 
-
+/* Used for testing vantage API
 app.get('/test', function(req, res){
-	var test = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=MSFT&datatype=json&apikey=LQYZUXEHKSVF5KQW'
+	var test = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=MSFT&datatype=json&apikey=
 	request(test, function(error,response,body){
-			//console.log('error :', error);
-			//console.log('response:', response.statusCode);
-			//console.log(body);
 			let parsed = JSON.parse(body);
-			//console.log(parsed["Global Quote"]["02. open"]);
 			if (body.length <= 155){
 				res.status(200).send({
   				message: "Error",})
 			}
 			else {
-				//console.log(parsed["Global Quote"]["08. previous close"])
-				//console.log(parseFloat(parsed["Global Quote"]["08. previous close"]))
 				res.status(200).send({
 			  				message: "Uh oh you shouldn't be here.",})
 			}
 		})
 
 });
-
+*/
 
 
 app.get('/logout', function (req, res) {
