@@ -17,7 +17,7 @@
 	<% include  ../partials/menu %>
 	<main>
 		<h1>Login Below </h1>
-
+		
 		<form action ="/login" method="post">
 			Email
 			<br>
@@ -27,6 +27,11 @@
 			<br>
 			<input type="password" name="userpassword">
 			<br>
+			<div style="color:red;">
+			<% if (errormessage != null){ %>
+				<p> <%=errormessage %> </p>
+			<% } %>
+			</div>
 			<input type="submit" value="Login">
 		</form>
 

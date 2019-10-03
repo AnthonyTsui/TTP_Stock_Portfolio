@@ -15,12 +15,18 @@
       <h2>Your Transactions </h2>
       </div>
 
+      <div style="color:red;">
+      <% if (errormessage != null){ %>
+        <h3> <%=errormessage %> </h3>
+      <% } %>
+      </div>
+
       <% if (alltransactions != null) { %> 
       <% for (var i = 0 ; i < alltransactions.length; i++) { %>
             <div class="row" style="height: 50px; margin:20px; border: solid black 2px; font-size:20px; text-align:center; padding-top: 10px ">
-              Stocks Symbol is:  <%= alltransactions[i][1] %> 
-            -- Stocks Amount is: <%= alltransactions[i][2] %> 
-            -- Stocks Price is: <%= alltransactions[i][3] %>
+              Stock:  <%= alltransactions[i][1] %> 
+           &nbsp;&nbsp;  <%= alltransactions[i][2] %> Shares 
+            &nbsp;@&nbsp; Stocks Price is: $<%= alltransactions[i][3] %>
             </div>
       <% } %>
       <% } %>

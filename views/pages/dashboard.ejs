@@ -31,7 +31,7 @@
               <%= allstocks[i][1] %> - <%= allstocks[i][2] %> Shares 
             </div>
             <div class="col-sm-5" style="height: 50px; background-color:<%- stockchange[i][0] >= 0 ? '#ccffdd' : '#ffcccc'%>; border-bottom:solid black 2px; font-size:20px; text-align:center; padding: 10px; margin-bottom: 15px; margin-top:15px; ">
-               Total: <%=stockchange[i][1] * allstocks[i][2] %> &nbsp;&nbsp;&nbsp; Change: <%= stockchange[i][0] %>
+               Total: $<%=stockchange[i][1] * allstocks[i][2] %> &nbsp;&nbsp;&nbsp; Change: <%= stockchange[i][0] %>
           </div>
         </div>
       <% } %>
@@ -51,6 +51,11 @@
       <% } else{ %>
       <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
       <% } %>
+      <div style="color:red;">
+      <% if (errormessage != null){ %>
+        <p> <%=errormessage %> </p>
+      <% } %>
+      </div>
       <div class="row">
         <form action ="/buystocks" method="post">
     			Stock Symbol
