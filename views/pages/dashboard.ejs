@@ -27,7 +27,12 @@
 		</form>
     </div>
     <div class="col-sm-4"> 
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    	<% if (login) { %>
+        <p>Current Balance : <%= currbalance %> </p>
+      <% } else{ %>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+      <% } %>
+      
     </div>
   </div>
 </div>

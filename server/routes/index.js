@@ -16,6 +16,8 @@ module.exports = (app) => {
 
 	app.post('/api/register', usersController.create);
 
+	app.post('/api/userupdate', usersController.update);
+
 
 	//Userstocks Logic
 	app.get('/api/userstocks', userstocksController.list);

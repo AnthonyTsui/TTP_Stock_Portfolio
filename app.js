@@ -95,6 +95,7 @@ app.post('/login', function(req, res){
 				//console.log("Not null!")
 				req.session.user = parsed.email;
 				req.session.admin = true;
+				req.session.balance = parsed.balance;
 				//console.log("Parsed is: " + parsed);
 				console.log("Response: " + response.content)
 
@@ -165,6 +166,7 @@ app.get('/dashboard', auth, function (req, res) {
     //res.send("You can only see this after you've logged in.");
     res.render('pages/dashboard',{
     	login:req.session.admin,
+    	currbalance: req.session.balance,
     });
 });
 
@@ -178,46 +180,112 @@ app.post('/buystocks',  function(req, res){
 	let createurl = 'http://localhost:8000/api/userstocks'
 	let updateurl = 'http://localhost:8000/api/updatestocks'
 
-	request.post(checkurl, {
-		form:{
-			useremail: req.session.user,
-			stocksymbol: req.body.stocksymbol,}},
-		 function(err, response,body){
-		 	if(body === undefined || body.length <= 2){
+	const alphaurl1 = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol='
+	const alphaurl2 = '&datatype=json&apikey=LQYZUXEHKSVF5KQW'
 
-		 		request.post(createurl,{
-		 			form:{
-		 				useremail: req.session.user,
-		 				stocksymbol: req.body.stocksymbol,
-		 				stockamount: req.body.stockamount,
-		 			}},
-		 			function(err, response, body){
-		 				console.log("Success on creating");
-		 				res.render('pages/dashboard',{
-		 					login:req.session.admin,
-		 				});
-		 			}
-		 		)
-		 	}
-		 	else
-		 	{
-		 		request.post(updateurl,{
-		 			form:{
-		 				useremail: req.session.user,
-		 				stocksymbol: req.body.stocksymbol,
-		 				stockamount: req.body.stockamount,
-		 			}},
-		 			function(err, response, body){
-		 				console.log("Success on updating");
-		 				res.render('pages/dashboard',{
-		 					login:req.session.admin,
-		 				});
-		 			}
-		 		)
-		 		
-		 	}
+	request(alphaurl1 + req.body.stocksymbol + alphaurl2, function(error,response,body){
+			//console.log('error :', error);
+			//console.log('response:', response.statusCode);
+			console.log(body);
+			var parsed = JSON.parse(body);
+			
+			if (body.length <= 155){
+				res.status(200).send({
+  				message: "Error no such stock",})
+			}
+			else {
+				console.log("Succes on vantage api call")
+				console.log(parsed["Global Quote"]["02. open"]);
 
-	})
+				var stockopen = parseFloat(parsed["Global Quote"]["02. open"]);
+				var stockprice = parseFloat(parsed["Global Quote"]["08. previous close"], 10);
+
+
+				console.log("logged open is " + stockprice)
+				console.log("logged price is " + stockprice)
+				
+				let checkuser = 'http://localhost:8000/api/login'
+				request.post(checkuser,{
+					form:{
+						useremail:req.session.user
+					}}, 
+					function(error, response,body){
+					var parsed = JSON.parse(body);
+					var balance = parseFloat(parsed.balance);
+					var totalprice = stockprice * parseInt(req.body.stockamount,10)
+
+					console.log("Body is: " + body)
+					console.log("Balance is : " + parsed.balance)
+					console.log("Totalprice is : " + totalprice)
+
+					if (totalprice > balance){
+						res.status(200).send({
+  						message: "Not enough money",})
+					}
+
+					else {
+						let updatebalance = 'http://localhost:8000/api/userupdate';
+						request.post(updatebalance,{
+							form:{
+								useremail: req.session.user,
+								totalprice: totalprice,
+							}},
+							 function(error, response, body){
+							 	var parsed = JSON.parse(body)
+							 	var currbalance = parseFloat(parsed.balance);
+							 	req.session.balance = parsed.balance
+							 	request.post(checkurl, {
+									form:{
+										useremail: req.session.user,
+										stocksymbol: req.body.stocksymbol,}},
+									 function(err, response,body){
+									 	if(body === undefined || body.length <= 2){
+
+									 		request.post(createurl,{
+									 			form:{
+									 				useremail: req.session.user,
+									 				stocksymbol: req.body.stocksymbol,
+									 				stockamount: req.body.stockamount,
+									 			}},
+									 			function(err, response, body){
+									 				console.log("Success on creating");
+									 				res.direct('/dashboard');
+									 			}
+									 		)
+									 	}
+									 	else
+									 	{
+									 		request.post(updateurl,{
+									 			form:{
+									 				useremail: req.session.user,
+									 				stocksymbol: req.body.stocksymbol,
+									 				stockamount: req.body.stockamount,
+									 			}},
+									 			function(err, response, body){
+									 				var parsed = JSON.parse(body);
+													var currbalance = parsed.balance;
+													console.log("Balance: " + currbalance)
+									 				console.log("Success on updating");
+									 				res.redirect('/dashboard');
+									 			}
+									 		)
+									 		
+									 	}
+
+								})
+
+						})
+					}
+				})
+			}
+		})
+
+
+
+
+
+
+	
 });
 
 app.get('/test', function(req, res){
@@ -227,12 +295,14 @@ app.get('/test', function(req, res){
 			//console.log('response:', response.statusCode);
 			console.log(body);
 			let parsed = JSON.parse(body);
-			console.log(parsed["Global Quote"]["02. open"]);
+			//console.log(parsed["Global Quote"]["02. open"]);
 			if (body.length <= 155){
 				res.status(200).send({
   				message: "Error",})
 			}
 			else {
+				console.log(parsed["Global Quote"]["08. previous close"])
+				console.log(parseFloat(parsed["Global Quote"]["08. previous close"]))
 				res.status(200).send({
 			  				message: "Uh oh you shouldn't be here.",})
 			}
