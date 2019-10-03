@@ -13,22 +13,36 @@
   	</style>
 </head>
 
-<body>
+<body style="background-color:#f2f2f2 ">
 	<% include  ../partials/menu %>
 	<main>
-		<h1>Login Below </h1>
 
-		<form action ="/login" method="post">
-			Email
-			<br>
-			<input type="text" placeholder="Email" name="useremail">
-			<br>
-			Password
-			<br>
-			<input type="password" name="userpassword">
-			<br>
-			<input type="submit" value="Login">
-		</form>
+		<div style="text-align:center; margin-top:20vh; padding-bottom:20px;">
+		<div class="container" style="border-color:#66a3ff; background:#99c2ff; border-style: solid; width: 20vw; padding-bottom:20px; border-radius:10px;" >
+		<h1 style="color:white;">Login Below </h1>
+		<div class="row">
+				<div class="col-md-12">
+					<form action ="/login" method="post">
+			
+						
+						<br>
+						<input type="text" placeholder="Enter Email" name="useremail" style="width:80%; padding:12px 20px; margin: 8px 0; display: inline-block; border:1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+						<br>
+						
+						<br>
+						<input type="password" name="userpassword" placeholder="Enter Password" style="width:80%; padding:12px 20px; margin: 8px 0; display: inline-block; border:1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+						<br>
+						<div style="color:red;">
+						<% if (errormessage != null){ %>
+							<p> <%=errormessage %> </p>
+						<% } %>
+						</div>
+						<input type="submit" value="Login" style=" color:white; background:#80b3ff; border:thin; height: 30px; width: 100px; border-radius:5px; font-size: 15px; margin-top: 30px">
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
 
 
 	</main>
