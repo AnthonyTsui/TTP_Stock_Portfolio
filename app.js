@@ -34,6 +34,7 @@ var auth = function(req, res, next) {
   if (req.session && req.session.admin)
     return next();
   else
+  	req.session.error='Please login.'
   	return res.redirect('/login');
 };
 
