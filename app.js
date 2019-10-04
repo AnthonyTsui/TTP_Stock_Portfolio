@@ -3,7 +3,6 @@ require('dotenv').config()
 console.log(process.env.API_KEY)
 
 const express = require('express');
-const port = 8000
 const axios = require('axios');
 const app = express()
 const request = require('request');
@@ -35,6 +34,7 @@ var auth = function(req, res, next) {
   if (req.session && req.session.admin)
     return next();
   else
+  	req.session.error='Please login.'
   	return res.redirect('/login');
 };
 
@@ -67,7 +67,7 @@ app.get('/login', function(req, res){
 app.post('/login', function(req, res){
 
 
-	let posturl = 'http://localhost:8000/api/login'
+	let posturl = 'http://localhost:'+process.env.PORT+'/api/login'
 
 	let password = bcrypt.hashSync(req.body.userpassword,10);
 	let email = req.body.useremail.toLowerCase();
@@ -113,8 +113,8 @@ app.get('/register', function(req, res){
 })
 
 app.post('/register', function(req, res){
-	let posturl = 'http://localhost:8000/api/register'
-	let checkurl = 'http://localhost:8000/api/login'
+	let posturl = 'http://localhost:'+process.env.PORT+'/api/register'
+	let checkurl = 'http://localhost:'+process.env.PORT+'/api/login'
 
 	let email = req.body.useremail.toLowerCase();
 	let hash = bcrypt.hashSync(req.body.userpassword, 10);
@@ -144,7 +144,7 @@ app.post('/register', function(req, res){
 //Portfolio and transaction logic
 
 app.get('/dashboard', auth, function (req, res) {
-    let findstocks = 'http://localhost:8000/api/findstocks'
+    let findstocks = 'http://localhost:'+process.env.PORT+'/api/findstocks'
    
     const alphaurl1 = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol='
 	const alphaurl2 = '&datatype=json&apikey='+process.env.API_KEY 
@@ -198,9 +198,9 @@ app.get('/dashboard', auth, function (req, res) {
 app.post('/buystocks', auth, function(req, res){
 
 
-	let checkurl = 'http://localhost:8000/api/checkstocks'
-	let createurl = 'http://localhost:8000/api/userstocks'
-	let updateurl = 'http://localhost:8000/api/updatestocks'
+	let checkurl = 'http://localhost:'+process.env.PORT+'/api/checkstocks'
+	let createurl = 'http://localhost:'+process.env.PORT+'/api/userstocks'
+	let updateurl = 'http://localhost:'+process.env.PORT+'/api/updatestocks'
 
 	const alphaurl1 = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol='
 	const alphaurl2 = '&datatype=json&apikey=' + process.env.API_KEY
@@ -228,7 +228,7 @@ app.post('/buystocks', auth, function(req, res){
 				var stockopen = parseFloat(parsed["Global Quote"]["02. open"]);
 				var stockprice = parseFloat(parsed["Global Quote"]["08. previous close"]);
 				
-				let checkuser = 'http://localhost:8000/api/login'
+				let checkuser = 'http://localhost:'+process.env.PORT+'/api/login'
 				request.post(checkuser,{
 					form:{
 						useremail:req.session.user
@@ -245,7 +245,7 @@ app.post('/buystocks', auth, function(req, res){
 					}
 
 					else {
-						let createrecord = 'http://localhost:8000/api/newtransactions';
+						let createrecord = 'http://localhost:'+process.env.PORT+'/api/newtransactions';
 						request.post(createrecord, {
 							form:{
 								useremail: req.session.user,
@@ -255,7 +255,7 @@ app.post('/buystocks', auth, function(req, res){
 							}},
 							function(error, response,body){
 							})
-						let updatebalance = 'http://localhost:8000/api/userupdate';
+						let updatebalance = 'http://localhost:'+process.env.PORT+'/api/userupdate';
 						request.post(updatebalance,{
 							form:{
 								useremail: req.session.user,
@@ -318,7 +318,7 @@ app.post('/buystocks', auth, function(req, res){
 });
 
 app.get('/transactions', auth, function (req, res) {
-    let findstocks = 'http://localhost:8000/api/usertransactions'
+    let findstocks = 'http://localhost:'+process.env.PORT+'/api/usertransactions'
     request.post(findstocks, {
     	form:{
     		useremail: req.session.user,
