@@ -191,6 +191,7 @@ app.get('/dashboard', auth, function (req, res) {
 		    		if(req.session.error){
 	    				delete req.session.error;
 	    			}
+	    			return;
     		})
     })
 });
