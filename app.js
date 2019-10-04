@@ -244,7 +244,7 @@ app.post('/buystocks', auth, function(req, res){
 					}
 
 					else {
-						let createrecord = 'http://localhost:'+process.env.PORT+'0/api/newtransactions';
+						let createrecord = 'http://localhost:'+process.env.PORT+'/api/newtransactions';
 						request.post(createrecord, {
 							form:{
 								useremail: req.session.user,
