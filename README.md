@@ -22,4 +22,4 @@ This app uses the following dependencies:
   ```
 In addition, we are using the Alpha Vantage API for calling and receive stock information. 
 #### Note that since we are using the free version of the API we can make at most: 5 API calls a minute and 500 calls a day.
-##### Due to the fact we are unable to check multiple stocks in one call, timeouts will occur at the dashboard when there are more than 5 different stocks purchased.
+#### Due to the fact we are unable to check multiple stocks in one call, timeouts will occur at the dashboard when there are more than 5 different stocks purchased.
