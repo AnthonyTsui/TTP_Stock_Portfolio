@@ -130,6 +130,7 @@ app.post('/register', function(req, res){
 		 	if(parsed.errors != null){
 		 		req.session.error = "This Email already has an account"
 		 		res.redirect('/login')
+
 		 	}
 		 	else
 		 	{
@@ -172,6 +173,7 @@ app.get('/dashboard', auth, function (req, res) {
 					catch(err){
 						req.session.error = "API Error, try again later and ensure you have less than 5 stocks due to API restrictions "
 						res.redirect('/transactions')
+						return;
 					}
     				})
     			}))
